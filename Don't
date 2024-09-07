@@ -1,196 +1,1115 @@
--- Load OrionLib
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+local player = game.Players.LocalPlayer
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/thanhdat4461/GUI-Library/main/Orion%20Library.lua')))()
 
--- Create the main GUI window
 local Window = OrionLib:MakeWindow({
-    Name = "Merge for diamond (made by ducky)",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "CatPiece"
+Name = "Cat Piece Hub", 
+HidePremium = false,
+SaveConfig = true, 
+ConfigFolder = "Cat Piece Hub",
+IntroEnabled = true,
+IntroText = "Cat Piece Hub",
 })
 
--- Create the "Main" tab
-local Tab1 = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+-- Create Tab 1
+local Tab = Window:MakeTab({Name = "Player hub", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local Section = Tab:AddSection({Name = "LocalPlayer"})
+OrionLib:MakeNotification({Name = "Welcome!", Content = "Welcome to my hub!", Image = "rbxassetid://4483345998", Time = 5})
+Tab:AddButton({Name = "High Speed", Callback = function() player.Character.Humanoid.WalkSpeed = 500 end})
+Tab:AddButton({Name = "High Jumppower", Callback = function() player.Character.Humanoid.JumpPower = 100 end})
+Tab:AddButton({Name = "Low Gravity", Callback = function() game.Workspace.Gravity = 10 end})
 
--- Create the "Commands" tab
-local Tab2 = Window:MakeTab({
-    Name = "Commands",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+-- Infinite Health
+local g = false
+local h
+local characterAddedConnection
 
--- Create the "Command List" tab
-local CommandListTab = Window:MakeTab({
-    Name = "Command List",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local function i()
+    local k = player.Character
+    if k then
+        local l = k:FindFirstChildOfClass("Humanoid")
+        if l then
+            l.Health = math.huge
+            l.MaxHealth = math.huge
 
--- Add the list of commands to the "Command List" tab
-CommandListTab:AddLabel("!addcoins [amount] - Adds the specified amount of coins.")
-CommandListTab:AddLabel("!addgems [amount] - Adds the specified amount of gems.")
-CommandListTab:AddLabel("!rainblocks [amount] - Rains the specified number of blocks.")
-CommandListTab:AddLabel("!rebirthloop - Starts the rebirth loop.")
-CommandListTab:AddLabel("!stoprebirthloop - Stops the rebirth loop.")
+            -- Ensure health stays infinite
+            if h then
+                h:Disconnect()
+            end
 
--- Section for admin commands
-local Section = Tab2:AddSection({
-    Name = "Admin Commands"
-})
+            h = l:GetPropertyChangedSignal("Health"):Connect(function()
+                if g then
+                    l.Health = math.huge
+                end
+            end)
 
--- Variables to control the loop
-local rebirthLoop = false
-
--- Function to stop the rebirth loop
-local function stopRebirthLoop()
-    rebirthLoop = false
+            l:GetPropertyChangedSignal("MaxHealth"):Connect(function()
+                if g then
+                    l.MaxHealth = math.huge
+                end
+            end)
+        end
+    end
 end
 
--- Button for adding coins
-Tab2:AddTextbox({
-    Name = "Add Coins",
-    Default = "1000000",
-    TextDisappear = true,
-    Callback = function(value)
-        local amount = tonumber(value)
-        if amount then
-            local args = { "Cash", amount }
-            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("AddRewardEvent"):FireServer(unpack(args))
+Tab:AddToggle({
+    Name = "Infinite Health",
+    Default = false,
+    Callback = function(m)
+        g = m
+
+        if g then
+            -- Apply infinite health immediately
+            i()
+
+            -- Connect to CharacterAdded to reapply when character respawns
+            if characterAddedConnection then
+                characterAddedConnection:Disconnect()
+            end
+            characterAddedConnection = player.CharacterAdded:Connect(i)
         else
-            warn("Invalid amount for coins.")
+            if h then
+                h:Disconnect()
+                h = nil
+            end
+            if characterAddedConnection then
+                characterAddedConnection:Disconnect()
+                characterAddedConnection = nil
+            end
+
+            -- Reset health to normal if the toggle is disabled
+            local k = player.Character
+            if k then
+                local l = k:FindFirstChildOfClass("Humanoid")
+                if l then
+                    l.Health = l.MaxHealth
+                end
+            end
         end
     end
 })
 
--- Button for adding gems
-Tab2:AddTextbox({
-    Name = "Add Gems",
-    Default = "1000",
+-- Create a new tab for fruit rewards
+local FruitTab = Window:MakeTab({Name = "Fruit", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local FruitSection = FruitTab:AddSection({Name = "Spin Rewards"})
+
+-- Button to claim Common fruit reward
+FruitTab:AddButton({Name = "Claim Common Fruit Reward", Callback = function()
+    game:GetService("Players").LocalPlayer.PlayerGui.SpinUI.Chat.Yes.Spin.Reward:FireServer("Common")
+end})
+
+-- Button to claim Uncommon fruit reward
+FruitTab:AddButton({Name = "Claim Uncommon Fruit Reward", Callback = function()
+    game:GetService("Players").LocalPlayer.PlayerGui.SpinUI.Chat.Yes.Spin.Reward:FireServer("Uncommon")
+end})
+
+-- Button to claim Rare fruit reward
+FruitTab:AddButton({Name = "Claim Rare Fruit Reward", Callback = function()
+    game:GetService("Players").LocalPlayer.PlayerGui.SpinUI.Chat.Yes.Spin.Reward:FireServer("Rare")
+end})
+
+-- Button to claim Legendary fruit reward
+FruitTab:AddButton({Name = "Claim Legendary Fruit Reward", Callback = function()
+    game:GetService("Players").LocalPlayer.PlayerGui.SpinUI.Chat.Yes.Spin.Reward:FireServer("Legendary")
+end})
+
+-- Create new tab for swords and accessories
+local SwordsAccessoriesTab = Window:MakeTab({Name = "Swords & Accessories", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local SwordsAccessoriesSection = SwordsAccessoriesTab:AddSection({Name = "Get All Swords and Accessories"})
+
+-- Button to get all swords
+SwordsAccessoriesTab:AddButton({Name = "Get All Swords", Callback = function()
+    local swords = {
+        "ONEYEARSWORD", "Saber", "BlueScythe", "SaberV2", "MoltSword", "TripleYoru",
+        "BattleAxe", "StrongSpear", "ColdSword", "EggSword", "BattleHammer",
+        "RedScythe", "Katana", "DualKatana", "TripleKatana", "Kiribachi",
+        "TimeSword", "FlameSword", "CatClaw", "Blaster777", "FrozenKatana",
+        "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
+        "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
+        "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
+        "GojoSword"
+    }
+
+    for _, sword in ipairs(swords) do
+        local args = {
+            [1] = "Buy",
+            [2] = sword,
+            [3] = 0
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughASword"):FireServer(unpack(args))
+    end
+end})
+
+-- Button to get all accessories
+SwordsAccessoriesTab:AddButton({Name = "Get All Accessories", Callback = function()
+    local accessories = {
+        "Cat", "StrawHat", "KiddCape", "LucyHelmet", "KizaruCape", "PirateKingCape",
+        "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
+        "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
+        "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
+        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+    }
+
+    for _, accessory in ipairs(accessories) do
+        local args = {
+            [1] = "Buy",
+            [2] = "Diamond",
+            [3] = accessory,
+            [4] = 0
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAAccessory"):FireServer(unpack(args))
+    end
+end})
+
+-- Button to add StrongSpear to inventory
+SwordsAccessoriesTab:AddButton({Name = "Add StrongSpear", Callback = function()
+    local args = {[1] = "StrongSpear"}
+    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
+end})
+
+-- Button to add StrongSword to inventory
+SwordsAccessoriesTab:AddButton({Name = "Add StrongSword", Callback = function()
+    local args = {[1] = "StrongSword"}
+    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
+end})
+
+-- Create new tab to remove negative points
+local RemoveNegativePointsTab = Window:MakeTab({Name = "Remove Negative Points", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local RemoveNegativePointsSection = RemoveNegativePointsTab:AddSection({Name = "Remove Negative Points"})
+
+-- Button to remove negative points
+RemoveNegativePointsTab:AddButton({Name = "Remove Negative Points", Callback = function()
+    local args = {[1] = -10000000000000000000}
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+end})
+
+-- Create new tab for Combat Styles
+local CombatTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local CombatSection = CombatTab:AddSection({Name = "Buy Combat Styles"})
+
+-- Button to buy Combat style
+CombatTab:AddButton({Name = "Buy Combat Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Combat",
+        [3] = 1
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy Electric style
+CombatTab:AddButton({Name = "Buy Electric Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Electric",
+        [3] = 17
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy DragonTalon style
+CombatTab:AddButton({Name = "Buy DragonTalon Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "DragonTalon",
+        [3] = 10
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy Cyborg style
+CombatTab:AddButton({Name = "Buy Cyborg Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Cyborg",
+        [3] = 17
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy FishmanKarate style
+CombatTab:AddButton({Name = "Buy FishmanKarate Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "FishmanKarate",
+        [3] = 17
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy DarkLeg style
+CombatTab:AddButton({Name = "Buy DarkLeg Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Sanguine",
+        [3] = 7
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy DarkLeg style
+CombatTab:AddButton({Name = "Buy DarkLeg Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "DarkLeg",
+        [3] = 7
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy SuperHuman style
+CombatTab:AddButton({Name = "Buy SuperHuman Style", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Superhuman",
+        [3] = 1
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy Kj style
+CombatTab:AddButton({Name = "Buy KJ", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "KJStyle",
+        [3] = 1
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy Garp Style
+CombatTab:AddButton({Name = "Buy Garp", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "GarpStyle",
+        [3] = 1
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Create new tab for God Mode
+local GodModeTab = Window:MakeTab({Name = "God Mode reset stats firts", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local GodModeSection = GodModeTab:AddSection({Name = "God Mode Controls"})
+
+-- Button to activate god mode
+GodModeTab:AddButton({Name = "Set God Mode", Callback = function()
+    local args = {
+        [1] = "MaxHealth"
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("StatSystem"):WaitForChild("Points"):FireServer(unpack(args))
+end})
+
+-- Button to set god mode
+GodModeTab:AddButton({Name = "God Mode First", Callback = function()
+    local args = {
+        [1] = -9000000000000000000
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+end})
+
+-- Create new tab for Fruit and reset stats and admin
+local FruitSecretTab = Window:MakeTab({Name = "Fruit &Reset stats", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local FruitSecretSection = FruitSecretTab:AddSection({Name = "Fruit & Secret Reveals"})
+
+-- Button to eat a fruit
+FruitSecretTab:AddButton({Name = "Eat OpeFruit", Callback = function()
+    local args = {
+        [1] = "Eat",
+        [2] = "OpeFruit",
+        [3] = "Ope"
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("SystemFruitEatV1"):WaitForChild("SecureEated"):FireServer(unpack(args))
+end})
+
+-- Button to reveal secret
+FruitSecretTab:AddButton({Name = "reset stats", Callback = function()
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("SHANKSSECRETREVEALEDGG"):FireServer(unpack(args))
+end})
+
+-- Create new tab for Max Stats V2
+local MaxStatsV2Tab = Window:MakeTab({ Name = "Max Stats V2", Icon = "rbxassetid://4483345998", PremiumOnly = false })
+local MaxStatsV2Section = MaxStatsV2Tab:AddSection({ Name = "Max Stats V2" })
+
+-- Button to achieve max stats V2
+MaxStatsV2Tab:AddButton({ Name = "Set Max Stats v2 -9qn", Callback = function()
+    local args = {
+        [1] = -9000000000000000000
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+end })
+
+-- Button to achieve max stats V2
+MaxStatsV2Tab:AddButton({ Name = "Set Max Stats v2 900qd", Callback = function()
+    local args = {
+        [1] = 900000000000000000
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+end })
+
+-- Button to set max stats
+MaxStatsV2Tab:AddButton({ Name = "Set Max Stats 90qd", Callback = function()
+    local args = {
+        [1] = 90000000000000000
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+end })
+
+-- Create new tab for setting points
+local SetPointsTab = Window:MakeTab({ Name = "Set Points", Icon = "rbxassetid://4483345998", PremiumOnly = false })
+local SetPointsSection = SetPointsTab:AddSection({ Name = "Set Points" })
+
+local points = 0
+
+SetPointsTab:AddTextbox({
+    Name = "Enter Points",
+    Default = "",
     TextDisappear = true,
     Callback = function(value)
-        local amount = tonumber(value)
-        if amount then
-            local args = { "Gems", amount }
-            game:GetService("ReplicatedStorage").Remotes.AddRewardEvent:FireServer(unpack(args))
+        points = tonumber(value)
+        print("Points entered:", points)
+    end
+})
+
+SetPointsTab:AddButton({ Name = "Set Points", Callback = function()
+    if points and points > 0 then
+        local args = {
+            [1] = points
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("testingstats"):FireServer(unpack(args))
+        print("Points set to:", points)
+    else
+        warn("Invalid points value")
+    end
+end })
+
+local ScriptsTab = Window:MakeTab({
+    Name = "Scripts",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local loopsRunning = false
+
+-- Function to handle the button click event
+local function startAllLoops()
+    if loopsRunning then
+        return -- Exit if loops are already running
+    end
+    
+    loopsRunning = true
+    
+    -- Start the first loop for eating fruit every 6 seconds
+    spawn(function()
+        while loopsRunning do
+            local args = {
+                [1] = "Eat",
+                [2] = "ReviveFruit",
+                [3] = "Revive"
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("SystemFruitEatV1"):WaitForChild("SecureEated"):FireServer(unpack(args))
+            wait(6) -- Wait for 6 seconds before eating again
+        end
+    end)
+
+    -- Start the second loop for the damage action every 4 seconds
+    spawn(function()
+        while loopsRunning do
+            local args = {
+                [1] = 36999998210048,
+                [2] = workspace:WaitForChild("Duckycant_quack1")
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("Damaged"):FireServer(unpack(args))
+            wait(4) -- Wait for 4 seconds before firing again
+        end
+    end)
+
+    -- Start the third loop for combat and remote actions every 4 seconds
+    spawn(function()
+        while loopsRunning do
+            game:GetService("ReplicatedStorage"):WaitForChild("CombatTag"):FireServer()
+            getNil("RemoteEvent", "RemoteEvent"):FireServer()
+            wait(4) -- Wait for 4 seconds before firing again
+        end
+    end)
+
+    -- Start the loop for subtracting 36999998210048 from health every 10 seconds
+    spawn(function()
+        while loopsRunning do
+            local player = game.Players.LocalPlayer
+            if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+                local humanoid = player.Character.Humanoid
+                humanoid.Health = humanoid.Health - 36999998210048 -- Subtract 36999998210048 from health
+            end
+            wait(8) -- Wait for 8 seconds before subtracting again
+        end
+    end)
+end
+
+-- Add a button to start all loops
+ScriptsTab:AddButton({
+    Name = "StartGodmode",
+    Callback = startAllLoops
+})
+
+-- Add a button to clear all loops
+ScriptsTab:AddButton({
+    Name = "StopGodmode",
+    Callback = function()
+        loopsRunning = false
+    end
+})
+
+-- Create a new tab for teleportation
+local TeleportTab = Window:MakeTab({
+    Name = "Teleport",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Function to get a player by display name or username
+local function findPlayerByName(name)
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.DisplayName:lower() == name:lower() or player.Name:lower() == name:lower() then
+            return player
+        end
+    end
+    return nil
+end
+
+-- Function to resolve short name to full player name
+local function resolveShortName(shortName)
+    -- Check if shortName is a single character
+    if #shortName == 1 then
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Name:sub(1, 1):lower() == shortName:lower() then
+                return player.Name
+            end
+        end
+    end
+
+    -- Use predefined mappings if available
+    local shortNameMapping = {
+        ["d"] = "Duckycant_quack1",
+        -- Add more mappings as needed
+    }
+    
+    return shortNameMapping[shortName:lower()] or shortName
+end
+
+-- Function to teleport the local player to another player
+local function teleportToPlayer(targetName)
+    local localPlayer = game.Players.LocalPlayer
+    local fullTargetName = resolveShortName(targetName)
+    local targetPlayer = findPlayerByName(fullTargetName)
+
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local targetHRP = targetPlayer.Character.HumanoidRootPart
+        local localHRP = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+        
+        if localHRP then
+            -- Set the local player's position to the target player's position
+            localHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0) -- Add an offset to prevent overlap
         else
-            warn("Invalid amount for gems.")
+            print("Local player's HumanoidRootPart not found!")
         end
+    else
+        print("Target player not found or invalid!")
     end
-})
+end
 
--- Button for buying a potion
-Tab2:AddButton({
-    Name = "Buy Potion",
-    Callback = function()
-        local args = { "Potion", 1 }
-        game:GetService("ReplicatedStorage").Remotes.BuyPotionEvent:FireServer(unpack(args))
-    end
-})
-
--- Button for starting rebirth loop
-Tab2:AddButton({
-    Name = "Start Rebirth Loop",
-    Callback = function()
-        rebirthLoop = true
-        while rebirthLoop do
-            local args = { 0, 0, 0 }
-            game:GetService("ReplicatedStorage").Remotes.RebirthConfirmEvent:FireServer(unpack(args))
-            wait(1) -- Adjust the delay as needed
-        end
-    end
-})
-
--- Button for stopping rebirth loop
-Tab2:AddButton({
-    Name = "Stop Rebirth Loop",
-    Callback = function()
-        stopRebirthLoop()
-    end
-})
-
--- Button for upgrading a specific level
-Tab2:AddTextbox({
-    Name = "Upgrade Level",
-    Default = "47",
+-- Add a textbox and button for teleportation
+TeleportTab:AddTextbox({
+    Name = "Enter Player Name or Display Name",
+    Default = "",
     TextDisappear = true,
-    Callback = function(value)
-        local level = tonumber(value)
-        if level then
-            local args = { "Upgrade", level, 0 }
-            game:GetService("ReplicatedStorage").Remotes.UpgradeEvent:FireServer(unpack(args))
+    Callback = function(playerName)
+        teleportToPlayer(playerName) -- Call teleport function when a name is entered
+    end
+})
+
+-- Add a button to trigger teleportation
+TeleportTab:AddButton({
+    Name = "Teleport to Player",
+    Callback = function()
+        local playerName = TeleportTab:GetTextBox("Enter Player Name or Display Name").Value
+        teleportToPlayer(playerName)
+    end
+})
+
+-- Create a new tab for admin commands
+local AdminTab = Window:MakeTab({
+    Name = "Admin Commands",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Add buttons for various admin commands
+AdminTab:AddButton({
+    Name = "God Mode",
+    Callback = function()
+        startAllLoops()
+    end
+})
+
+AdminTab:AddButton({
+    Name = "Teleport to Player",
+    Callback = function()
+        local playerName = TeleportTab:GetTextBox("Enter Player Name or Display Name").Value
+        teleportToPlayer(playerName)
+    end
+})
+
+-- Create a new tab for command list
+local CmdsTab = Window:MakeTab({
+    Name = "Cmds List",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Add a label for the commands list
+CmdsTab:AddLabel("Commands List:")
+CmdsTab:AddLabel("[!godmodebyduck] - Starts all loops")
+CmdsTab:AddLabel("[!tp [playerName]] - Teleports to player")
+
+-- Debounce variables
+local lastCommandTime = 0
+local debounceTime = 1 -- Time in seconds to prevent command spamming
+
+-- Function to handle chat commands
+local function onChatMessage(message)
+    local currentTime = tick()
+    local args = string.split(message, " ")
+    local command = args[1]
+    local targetName = args[2]
+
+    if currentTime - lastCommandTime < debounceTime then
+        return -- Exit if the command is being triggered too frequently
+    end
+
+    lastCommandTime = currentTime
+
+    if command == "!godmodebyduck" then
+        startAllLoops()
+    elseif command == "!tp" and targetName then
+        teleportToPlayer(targetName)
+    end
+end
+
+-- Connect chat message event to function
+game.Players.LocalPlayer.Chatted:Connect(onChatMessage)
+local function claimFruitReward(type, quantity)
+    quantity = quantity or 1 -- Default to 1 if no quantity is provided
+    local player = game:GetService("Players").LocalPlayer
+    local remote = player.PlayerGui.SpinUI.Chat.Yes.Spin.Reward
+    for i = 1, quantity do
+        remote:FireServer(type)
+    end
+end
+
+-- Create the Fruit Tab
+local FruitTab = Window:MakeTab({
+    Name = "Fruit Rewards",
+    Icon = "rbxassetid://4483345998", -- Replace with an appropriate icon ID
+    PremiumOnly = false
+})
+
+-- Buttons to claim various fruit rewards
+FruitTab:AddButton({
+    Name = "Claim 1 Legendary Fruit Reward",
+    Callback = function() claimFruitReward("Legendary") end
+})
+FruitTab:AddButton({
+    Name = "Claim 1 Common Fruit Reward",
+    Callback = function() claimFruitReward("Common") end
+})
+FruitTab:AddButton({
+    Name = "Claim 1 Uncommon Fruit Reward",
+    Callback = function() claimFruitReward("Uncommon") end
+})
+FruitTab:AddButton({
+    Name = "Claim 1 Rare Fruit Reward",
+    Callback = function() claimFruitReward("Rare") end
+})
+
+-- Function to handle diamond code
+local function useDiamondCode(value)
+    game:GetService("ReplicatedStorage").BonusFolderFX.DiamondCodes:FireServer(value)
+end
+
+-- Function to use EnterCode request
+local function useEnterCode(value, code)
+    game:GetService("ReplicatedStorage").EnterCode:FireServer(value, code)
+end
+
+-- Function to eat fruits
+local function eatFruit(fruit, alias)
+    local args = {
+        [1] = "Eat",
+        [2] = fruit,
+        [3] = alias
+    }
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local systemFruitEat = ReplicatedStorage:FindFirstChild("SystemFruitEatV1")
+    if systemFruitEat then
+        local secureEated = systemFruitEat:FindFirstChild("SecureEated")
+        if secureEated then
+            secureEated:FireServer(unpack(args))
         else
-            warn("Invalid level for upgrade.")
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "SecureEated not found.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    else
+        OrionLib:MakeNotification({
+            Name = "Error",
+            Content = "SystemFruitEatV1 not found.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+end
+
+-- Function to eat OpeFruit
+local function eatOpeFruit()
+    local args = {
+        [1] = "Eat",
+        [2] = "OpeFruit",
+        [3] = "Ope"
+    }
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local systemFruitEat = ReplicatedStorage:FindFirstChild("SystemFruitEatV1")
+    if systemFruitEat then
+        local secureEated = systemFruitEat:FindFirstChild("SecureEated")
+        if secureEated then
+            secureEated:FireServer(unpack(args))
+        else
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "SecureEated not found.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    else
+        OrionLib:MakeNotification({
+            Name = "Error",
+            Content = "SystemFruitEatV1 not found.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+end
+
+-- Add more fruits here
+local function eatSandFruit() eatFruit("SandFruit", "Sand") end
+local function eatHunterFruit() eatFruit("HunterFruit", "HuntFruit") end
+local function eatWarpFruit() eatFruit("WarpFruit", "Warp") end
+local function eatReviveFruit() eatFruit("ReviveFruit", "Revive") end
+local function eatGUMGear5Fruit() eatFruit("GUMGear5Fruit", "GUMGear5") end
+local function eatLightFruit() eatFruit("LightFruit", "Light") end
+local function eatNightmareGumGum() eatFruit("NightmareGumGum", "GumNightmare") end
+local function eatShadowShadow() eatFruit("ShadowShadow", "ShadowFruit") end
+local function eatGravityFruit() eatFruit("GravityFruit", "Gravity") end
+local function eatVenomFruit() eatFruit("VenomFruit", "VenomVenom") end
+local function eatSoundSound() eatFruit("SoundSound", "SoundFruit") end
+local function eatMammothFruit() eatFruit("MammothFruit", "Mammoth") end
+local function eatTrexFruit() eatFruit("TrexFruit", "Trex") end
+local function eatKitsuneFruit() eatFruit("KitsuneFruit", "Kitsune") end
+local function eatLoveFruit() eatFruit("LoveLoveFruit", "LoveFruit") end
+local function eatSnowmanFruit() eatFruit("SnowmanFruit", "Snowman") end
+local function eatGumv2Fruit() eatFruit("GumV2Fruit", "GumV2") end
+local function eatSpidermanFruit() eatFruit("SpiderManFruitt", "SpidermanFruitt") end
+local function eatDoughFV2Fruit() eatFruit("DoughV2Fruit", "DoughFV2") end
+local function eatCHAINSAWMANFruit() eatFruit("CHAINSAWFR", "CHAINSAWMAN") end
+local function eatDragonV3Fruit() eatFruit("DragonV3Fruit", "DragonV3") end
+local function eatMagmaFruit() eatFruit("MagmaFruit", "Magma") end
+local function eatToriDFFruit() eatFruit("Tori", "ToriDF") end
+local function eatFlameFruit() eatFruit("FlameFruit", "Flame") end
+local function eatIceFruit() eatFruit("SnowFruit", "IceFruit") end
+local function eatSpringFruit() eatFruit("SpringFruit", "Spring") end
+local function eatTremorFruit() eatFruit("Quake", "Tremor") end
+local function eatGoroV2Fruit() eatFruit("GoroV2Fruit", "GoroV2") end
+
+-- Function to toggle infinite health
+local g = false
+local h
+local characterAddedConnection
+
+local function toggleInfiniteHealth()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.Health = math.huge
+            humanoid.MaxHealth = math.huge
+
+            -- Ensure health stays infinite
+            if h then
+                h:Disconnect()
+            end
+
+            h = humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                if g then
+                    humanoid.Health = math.huge
+                end
+            end)
+
+            humanoid:GetPropertyChangedSignal("MaxHealth"):Connect(function()
+                if g then
+                    humanoid.MaxHealth = math.huge
+                end
+            end)
         end
     end
-})
+end
 
--- Button for raining blocks
-Tab2:AddTextbox({
-    Name = "Rain Blocks",
-    Default = "10",
+-- Function to buy all swords
+local function buyAllSwords()
+    local swords = {
+        "ONEYEARSWORD", "Saber", "BlueScythe", "SaberV2", "MoltSword", "TripleYoru",
+        "BattleAxe", "StrongSpear", "ColdSword", "EggSword", "BattleHammer",
+        "RedScythe", "Katana", "DualKatana", "TripleKatana", "Kiribachi",
+        "TimeSword", "FlameSword", "CatClaw", "Blaster777", "FrozenKatana",
+        "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
+        "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
+        "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
+        "GojoSword", "StrongSword", "StrongSpear"
+    }
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local boughASword = ReplicatedStorage:WaitForChild("BonusFolderFX"):WaitForChild("BoughASword")
+
+    for _, sword in ipairs(swords) do
+        local args = {
+            [1] = "Buy",
+            [2] = sword,
+            [3] = 0
+        }
+        boughASword:FireServer(unpack(args))
+    end
+end
+
+-- Function to buy all accessories
+local function buyAllAccessories()
+    local accessories = {
+        "Cat", "StrawHat", "KiddCape", "LucyHelmet", "KizaruCape", "PirateKingCape",
+        "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
+        "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
+        "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
+        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+    }
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local boughAAccessory = ReplicatedStorage:WaitForChild("BonusFolderFX"):WaitForChild("BoughAAccessory")
+
+    for _, accessory in ipairs(accessories) do
+        local args = {
+            [1] = "Buy",
+            [2] = "Diamond",
+            [3] = accessory,
+            [4] = 0
+        }
+        boughAAccessory:FireServer(unpack(args))
+    end
+
+    OrionLib:MakeNotification({
+        Name = "Accessories Purchased",
+        Content = "All available accessories have been bought.",
+        Image = "rbxassetid://4483345998",
+        Time = 5
+    })
+end
+
+-- Function to reset stats
+local function resetStats()
+    local args = {
+        [1] = game:GetService("Players").LocalPlayer
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("SHANKSSECRETREVEALEDGG"):FireServer(unpack(args))
+end
+
+-- Function to buy Strong Spear
+local function buyStrongSpear()
+    local args = {
+        [1] = "StrongSpear",
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
+end
+    
+    -- Function to buy Strong Sword
+local function buyStrongSword()
+    local args = {
+        [1] = "StrongSword",
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))  
+end
+    -- Function to buy all swords
+local function buyAllSwords()
+    local swords = {
+        "ONEYEARSWORD", "Saber", "BlueScythe", "SaberV2", "MoltSword", "TripleYoru",
+        "BattleAxe", "StrongSpear", "ColdSword", "EggSword", "BattleHammer",
+        "RedScythe", "Katana", "DualKatana", "TripleKatana", "Kiribachi",
+        "TimeSword", "FlameSword", "CatClaw", "Blaster777", "FrozenKatana",
+        "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
+        "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
+        "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
+        "GojoSword", "StrongSword", "StrongSpear"
+    }
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local boughASword = ReplicatedStorage:WaitForChild("BonusFolderFX"):WaitForChild("BoughASword")
+
+    for _, sword in ipairs(swords) do
+        local args = {
+            [1] = "Buy",
+            [2] = sword,
+            [3] = 0
+        }
+        boughASword:FireServer(unpack(args))
+    end
+end
+
+-- Function to buy all accessories
+local function buyAllAccessories()
+    local accessories = {
+        "Cat", "StrawHat", "KiddCape", "LucyHelmet", "KizaruCape", "PirateKingCape",
+        "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
+        "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
+        "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
+        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+    }
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local boughAAccessory = ReplicatedStorage:WaitForChild("BonusFolderFX"):WaitForChild("BoughAAccessory")
+
+    for _, accessory in ipairs(accessories) do
+        local args = {
+            [1] = "Buy",
+            [2] = "Diamond",
+            [3] = accessory,
+            [4] = 0
+        }
+        boughAAccessory:FireServer(unpack(args))
+    end
+
+    OrionLib:MakeNotification({
+        Name = "Accessories Purchased",
+        Content = "All available accessories have been bought.",
+        Image = "rbxassetid://4483345998",
+        Time = 5
+    })
+end
+
+-- Function to buy specific style
+local function buyStyle(style, id)
+    local args = {
+        [1] = "Buy",
+        [2] = style,
+        [3] = id
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end
+
+-- List of commands and their functions
+local commands = {
+    ["setgeli"] = function(value, code)
+        useEnterCode(tonumber(value), code)
+    end,
+    ["setdiamond"] = function(value)
+        useDiamondCode(tonumber(value))
+    end,
+    ["ope"] = eatOpeFruit,
+    ["infhp"] = function()
+        g = not g
+
+        if g then
+            toggleInfiniteHealth()
+            if characterAddedConnection then
+                characterAddedConnection:Disconnect()
+            end
+            characterAddedConnection = game.Players.LocalPlayer.CharacterAdded:Connect(toggleInfiniteHealth)
+        else
+            if h then
+                h:Disconnect()
+                h = nil
+            end
+            if characterAddedConnection then
+                characterAddedConnection:Disconnect()
+                characterAddedConnection = nil
+            end
+
+            local character = game.Players.LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.Health = humanoid.MaxHealth
+                end
+            end
+        end
+    end,
+    ["claimlegendary"] = function(quantity) claimFruitReward("Legendary", tonumber(quantity)) end,
+    ["claimcommon"] = function(quantity) claimFruitReward("Common", tonumber(quantity)) end,
+    ["claimuncommon"] = function(quantity) claimFruitReward("Uncommon", tonumber(quantity)) end,
+    ["claimrare"] = function(quantity) claimFruitReward("Rare", tonumber(quantity)) end,
+    ["buyallswords"] = buyAllSwords,
+    ["buyallaccessories"] = buyAllAccessories,
+    ["resetstats"] = resetStats,
+    ["buystrongsword"] = function() buyStrongSword() end,
+    ["buystrongspear"] = buyStrongSpear,
+    ["setspeed"] = function(value) setSpeed(tonumber(value)) end,
+    ["setjump"] = function(value) setJumpPower(tonumber(value)) end,
+    ["buycombat"] = function() buyStyle("Combat", 1) end,
+    ["buyelectric"] = function() buyStyle("Electric", 17) end,
+    ["buydragontalon"] = function() buyStyle("DragonTalon", 10) end,
+    ["buycyborg"] = function() buyStyle("Cyborg", 17) end,
+    ["buyfishmankarate"] = function() buyStyle("FishmanKarate", 17) end,
+    ["buydarkleg"] = function() buyStyle("DarkLeg", 7) end,
+    ["buysuperhuman"] = function() buyStyle("Superhuman", 1) end,
+    ["buykj"] = function() buyStyle("KJStyle", 1) end,
+    ["buysanguine"] = function() buyStyle("Sanguine", 0) end,
+    ["buygarp"] = function() buyStyle("GarpStyle", 1) end,
+    ["eatspiderman"] = function() eatSpidermanFruit() end,
+    ["eatdoughv2"] = function() eatDoughFV2Fruit() end,
+    ["eatdragonv3"] = function() eatDragonV3Fruit() end,
+    ["eatmagma"] = function() eatMagmaFruit() end,
+    ["eattori"] = function() eatToriDFFruit() end,
+    ["eatflame"] = function() eatFlameFruit() end,
+    ["eatice"] = function() eatIceFruit() end,
+    ["eatspring"] = function() eatSpringFruit() end,
+    ["eatquake"] = function() eatTremorFruit() end,
+    ["eatgoro"] = function() eatGoroV2Fruit() end,
+    ["eatsand"] = function() eatSandFruit() end,
+    ["eathunter"] = function() eatHunterFruit() end,
+    ["eatwarp"] = function() eatWarpFruit() end,
+    ["eatrevive"] = function() eatReviveFruit() end,
+    ["eatgumgear5"] = function() eatGUMGear5Fruit() end,
+    ["eatlight"] = function() eatLightFruit() end,
+    ["eatnightmaregum"] = function() eatNightmareGumGum() end,
+    ["eatshadow"] = function() eatShadowShadow() end,
+    ["eatgravity"] = function() eatGravityFruit() end,
+    ["eatvenom"] = function() eatVenomFruit() end,
+    ["eatsound"] = function() eatSoundSound() end,
+    ["eatmammoth"] = function() eatMammothFruit() end,
+    ["eattrex"] = function() eatTrexFruit() end,
+    ["eatkitsune"] = function() eatKitsuneFruit() end,
+    ["eatgumv2"] = function() eatGumv2Fruit() end,
+    ["eatsnowman"] = function() eatSnowmanFruit() end,
+    ["eatlove"] = function() eatLoveFruit() end
+}
+
+-- Create the Admin Commands tab
+
+-- Add textbox for command input
+AdminTab:AddTextbox({
+    Name = "Command Input",
+    Default = "Enter command here...",
     TextDisappear = true,
-    Callback = function(value)
-        local count = tonumber(value)
-        if count then
-            for i = 1, count do
-                game:GetService("ReplicatedStorage").Remotes.RainEvent:FireServer()
+    Callback = function(commandText)
+        local commandParts = string.split(commandText, " ")
+        local commandName = commandParts[1]:lower()
+        local commandArgs = {table.unpack(commandParts, 2)}
+
+        local commandFunction = commands[commandName]
+        if commandFunction then
+            if #commandArgs > 0 then
+                commandFunction(table.unpack(commandArgs))
+            else
+                commandFunction()
             end
         else
-            warn("Invalid number of blocks to rain.")
+            OrionLib:MakeNotification({
+                Name = "Invalid Command",
+                Content = "The command you entered does not exist.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
         end
     end
 })
 
--- Add labels in the "Main" tab
-Tab1:AddLabel("Made by VG ducky")
-Tab1:AddLabel("Update soon")
+-- Create the Commands List tab
+local CommandsListTab = Window:MakeTab({
+    Name = "Commands List",
+    Icon = "rbxassetid://4483345998", -- Replace with an appropriate icon ID
+    PremiumOnly = false
+})
 
-OrionLib:Init()
+-- Add buttons for each command
+for commandName, commandFunction in pairs(commands) do
+    CommandsListTab:AddButton({
+        Name = commandName,
+        Callback = commandFunction
+    })
+end
 
--- Command Processing for Chat
-local function handleChatCommand(player, msg)
-    local prefix = "!"
-    local args = string.split(msg, " ")
-    local command = args[1]
-    local value = tonumber(args[2])
+-- Add a new Combat Styles tab
+local CombatTab = Window:MakeTab({
+    Name = "Combat Styles",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-    if command:sub(1, #prefix) == prefix then
-        command = command:sub(#prefix + 1) -- Remove the prefix
-    end
+-- Add buttons to purchase each combat style
+CombatTab:AddButton({Name = "Buy Combat", Callback = function() buyStyle("Combat", 1) end})
+CombatTab:AddButton({Name = "Buy Electric", Callback = function() buyStyle("Electric", 17) end})
+CombatTab:AddButton({Name = "Buy DragonTalon", Callback = function() buyStyle("DragonTalon", 10) end})
+CombatTab:AddButton({Name = "Buy Cyborg", Callback = function() buyStyle("Cyborg", 17) end})
+CombatTab:AddButton({Name = "Buy FishmanKarate", Callback = function() buyStyle("FishmanKarate", 17) end})
+CombatTab:AddButton({Name = "Buy DarkLeg", Callback = function() buyStyle("DarkLeg", 7) end})
+CombatTab:AddButton({Name = "Buy SuperHuman", Callback = function() buyStyle("Superhuman", 1) end})
+CombatTab:AddButton({Name = "Buy KJ", Callback = function() buyStyle("KJStyle", 1) end})
+CombatTab:AddButton({Name = "Buy Garp", Callback = function() buyStyle("GarpStyle", 1) end})
+CombatTab:AddButton({Name = "Buy Sanguine", Callback = function() buyStyle("Sanguine", 0) end})
 
-    if command == "addcoins" then
-        local amount = value or 1000000
-        game:GetService("ReplicatedStorage").Remotes.AddRewardEvent:FireServer("Cash", amount)
-    elseif command == "addgems" then
-        local amount = value or 1000
-        game:GetService("ReplicatedStorage").Remotes.AddRewardEvent:FireServer("Gems", amount)
-    elseif command == "rainblocks" then
-        local count = value or 10
-        for i = 1, count do
-            game:GetService("ReplicatedStorage").Remotes.RainEvent:FireServer()
+-- Chat command prefix
+local commandPrefix = "!"
+
+-- Function to handle chat commands
+local function onChatMessage(message)
+    if message:sub(1, #commandPrefix) == commandPrefix then
+        local commandText = message:sub(#commandPrefix + 1)
+        local commandParts = string.split(commandText, " ")
+        local commandName = commandParts[1]:lower()
+        local commandArgs = {table.unpack(commandParts, 2)}
+
+        local commandFunction = commands[commandName]
+        if commandFunction then
+            if #commandArgs > 0 then
+                commandFunction(table.unpack(commandArgs))
+            else
+                commandFunction()
+            end
+        else
+            OrionLib:MakeNotification({
+                Name = "Invalid Command",
+                Content = "The command you entered does not exist.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
         end
-    elseif command == "rebirthloop" then
-        rebirthLoop = true
-        while rebirthLoop do
-            game:GetService("ReplicatedStorage").Remotes.RebirthConfirmEvent:FireServer(0, 0, 0)
-            wait(1)
-        end
-    elseif command == "stoprebirthloop" then
-        stopRebirthLoop()
-    else
-        warn("Unknown command: " .. command)
     end
 end
 
--- Connect to the PlayerAdded event
-game.Players.PlayerAdded:Connect(function(player)
-    player.Chatted:Connect(function(msg)
-        pcall(function() handleChatCommand(player, msg) end)
-    end)
-end)
+-- Connect the chat command handler
+game:GetService("Players").LocalPlayer.Chatted:Connect(onChatMessage)
+
+-- Create new tab for setting points
+local SetPointsTab = Window:MakeTab({ Name = "Max lvl Soon", Icon = "rbxassetid://4483345998", PremiumOnly = false })
+local SetPointsSection = SetPointsTab:AddSection({ Name = "Max lvl soon" })
+
+-- Create new tab for Credits or Information
+local CreditsTab = Window:MakeTab({Name = "Credits", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local CreditsSection = CreditsTab:AddSection({Name = "Credits & Information"})
+
+-- Add information or credits
+CreditsTab:AddLabel("Creator: VG Ducky")
+CreditsTab:AddLabel("Assistance Starfishy")
+CreditsTab:AddLabel("Developer Eclipse")
 
 OrionLib:Init()
