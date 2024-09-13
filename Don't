@@ -566,7 +566,7 @@ local function startAllLoops()
                 [3] = "Revive"
             }
             game:GetService("ReplicatedStorage"):WaitForChild("SystemFruitEatV1"):WaitForChild("SecureEated"):FireServer(unpack(args))
-            wait(6) -- Wait for 6 seconds before eating again
+            wait(3) -- Wait for 6 seconds before eating again
         end
     end)
 
