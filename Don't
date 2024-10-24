@@ -1,4 +1,4 @@
-        local player = game.Players.LocalPlayer
+local player = game.Players.LocalPlayer
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/thanhdat4461/GUI-Library/main/Orion%20Library.lua')))()
 
 local Window = OrionLib:MakeWindow({
@@ -409,7 +409,7 @@ local function startAllLoops()
                 [3] = "Revive"
             }
             game:GetService("ReplicatedStorage"):WaitForChild("SystemFruitEatV1"):WaitForChild("SecureEated"):FireServer(unpack(args))
-            wait(3) -- Wait for 6 seconds before eating again
+            wait(6) -- Wait for 6 seconds before eating again
         end
     end)
 
