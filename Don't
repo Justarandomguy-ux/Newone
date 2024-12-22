@@ -3,7 +3,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 -- Hardcoded key
-local validKey = "DUCKYISBACK" -- Replace this with your actual key
+local validKey = "1CggV7Zw8DGxdblLGdROXvolkd9EtsuU" -- Replace this with your actual key
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -27,7 +27,7 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0.2, 0)
 titleLabel.Position = UDim2.new(0, 0, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "[Vg_ducky hub]"-- Put your script hub name here
+titleLabel.Text = "[Vg_ducky hub] Your Certified gay"-- Put your script hub name here
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 24
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1016,7 +1016,7 @@ local function buyAllSwords()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1127,6 +1127,7 @@ local commands = {
     ["buycyborg"] = function() buyStyle("Cyborg", 17) end,
     ["buyfishmankarate"] = function() buyStyle("FishmanKarate", 17) end,
     ["buydarkleg"] = function() buyStyle("DarkLeg", 7) end,
+    ["buyOkarun"] = function() buyStyle("Okarun", 7) end,
     ["buysuperhuman"] = function() buyStyle("Superhuman", 1) end,
     ["buykj"] = function() buyStyle("KJStyle", 1) end,
     ["buysanguine"] = function() buyStyle("Sanguine", 0) end,
@@ -1223,6 +1224,7 @@ CombatTab:AddButton({Name = "Buy SuperHuman", Callback = function() buyStyle("Su
 CombatTab:AddButton({Name = "Buy KJ", Callback = function() buyStyle("KJStyle", 1) end})
 CombatTab:AddButton({Name = "Buy Garp", Callback = function() buyStyle("GarpStyle", 1) end})
 CombatTab:AddButton({Name = "Buy Sanguine", Callback = function() buyStyle("Sanguine", 0) end})
+CombatTab:AddButton({Name = "Buy Okarun", Callback = function() buyStyle("Okarun", 0) end})
 
 -- Chat command prefix
 local commandPrefix = "!"
@@ -1281,5 +1283,5 @@ end)
 
 -- Function to open the key link (Optional)
 getKeyButton.MouseButton1Click:Connect(function()
-    setclipboard("https://link-hub.net/1199439/key-system-1") -- Update as needed
+    setclipboard("https://discord.gg/bvbhhFu3") -- Update as needed
         end)
