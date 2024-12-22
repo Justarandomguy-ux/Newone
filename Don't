@@ -303,7 +303,7 @@ SwordsAccessoriesTab:AddButton({Name = "Get All Accessories", Callback = functio
         "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
         "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
         "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
-        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat"
     }
 
     for _, accessory in ipairs(accessories) do
@@ -959,7 +959,7 @@ local function buyAllAccessories()
         "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
         "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
         "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
-        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
