@@ -283,7 +283,7 @@ SwordsAccessoriesTab:AddButton({Name = "Get All Swords", Callback = function()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword"
+        "GojoSword", "Kikoku", "ChristmasKatana"
     }
 
     for _, sword in ipairs(swords) do
@@ -303,7 +303,7 @@ SwordsAccessoriesTab:AddButton({Name = "Get All Accessories", Callback = functio
         "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
         "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
         "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
-        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat"
+        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat", "LawHat"
     }
 
     for _, accessory in ipairs(accessories) do
@@ -936,7 +936,7 @@ local function buyAllSwords()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -959,7 +959,7 @@ local function buyAllAccessories()
         "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
         "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
         "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
-        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat"
+        "Snowmantophatred", "Snowmantophatgreen", "StrongShield", "WarpHat", "LawHat"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1016,7 +1016,7 @@ local function buyAllSwords()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1039,7 +1039,7 @@ local function buyAllAccessories()
         "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
         "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
         "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
-        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat"
+        "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat", "LawHat"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
