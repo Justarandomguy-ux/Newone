@@ -167,6 +167,224 @@ IntroEnabled = true,
 IntroText = "Cat Piece Hub",
 })
 
+-- Create new tab for Credits or Information
+local CreditsTab = Window:MakeTab({Name = "Credits", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local CreditsSection = CreditsTab:AddSection({Name = "Credits & Information"})
+
+-- Add information or credits
+CreditsTab:AddLabel("Creator: VG Ducky")
+CreditsTab:AddLabel("⚠️ 👇👇👇👇⚠️")
+CreditsTab:AddLabel("you cant sharer the sword and accessories cuz i patch it")
+CreditsTab:AddLabel("UPDATE")
+CreditsTab:AddLabel("🎉Sword🎉 ")
+CreditsTab:AddLabel("Kikoku")
+CreditsTab:AddLabel("Christmas katana")
+CreditsTab:AddLabel("🎉 accessories 🎉")
+CreditsTab:AddLabel("LawHat")
+CreditsTab:AddLabel("🎉New added🎉")
+CreditsTab:AddLabel("Can give you all sword")
+CreditsTab:AddLabel("auto farm ")
+
+-- Variable to store the selected player
+local selectedPlayer
+
+-- Function to find player by name
+local function findPlayer(name)
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        if plr.Name == name then
+            return plr
+        end
+    end
+    return nil
+end
+
+-- Function to give swords
+local function giveSwords(targetPlayer)
+    if targetPlayer then
+        local swords = {
+        "ONEYEARSWORD", "Saber", "BlueScythe", "SaberV2", "MoltSword", "TripleYoru",
+        "BattleAxe", "StrongSpear", "ColdSword", "EggSword", "BattleHammer",
+        "RedScythe", "Katana", "DualKatana", "TripleKatana", "Kiribachi",
+        "TimeSword", "FlameSword", "CatClaw", "Blaster777", "FrozenKatana",
+        "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
+        "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
+        "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
+    }
+        
+        for _, sword in ipairs(swords) do
+            local args = {
+                [1] = sword
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
+        end
+        print("All swords given to " .. targetPlayer.Name)
+    else
+        warn("Player not found!")
+    end
+end
+
+-- Function to give accessories
+local function giveAccessories(targetPlayer)
+    if targetPlayer then
+        local accessories = {
+            "Cat", "StrawHat", "KiddCape", "LucyHelmet", "KizaruCape", "PirateKingCape",
+            "KaidoCape", "BigMomHat", "MihawkHat", "PinkCatHat", "BlackCatHat",
+            "BlueCatHat", "DaValkyrieHelm", "SerpentValk", "SantaHat", "BraveHat",
+            "Top10Hat", "The2023Cape", "Eggwings", "Specialchristmashat", "Megachristmashat",
+            "Snowmantophatred", "Snowmantophatgreen", "STRONGSHIELD", "WarpHat", "LawHat"
+        }
+        
+        for _, accessory in ipairs(accessories) do
+            local args = {
+                [1] = accessory
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("AccessoryInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
+        end
+        print("All accessories given to " .. targetPlayer.Name)
+    else
+        warn("Player not found!")
+    end
+end
+
+-- Function to update the player dropdown list
+local function updatePlayerDropdown()
+    local players = {}
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        table.insert(players, plr.Name)
+    end
+    return players
+end
+
+-- Swords & Accessories Tab
+local SwordsAccessoriesTab = Window:MakeTab({
+    Name = "Swords & Accessories",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Player Dropdown
+local playersDropdown
+SwordsAccessoriesTab:AddDropdown({
+    Name = "Select Player",
+    Options = updatePlayerDropdown(),
+    Callback = function(value)
+        selectedPlayer = findPlayer(value)
+    end
+})
+
+-- Button to update the dropdown list (in case players leave or join)
+SwordsAccessoriesTab:AddButton({
+    Name = "Refresh Player List",
+    Callback = function()
+        playersDropdown:Refresh(updatePlayerDropdown(), true)
+    end
+})
+
+-- Button to confirm and give all swords
+SwordsAccessoriesTab:AddButton({
+    Name = "Give All Swords",
+    Callback = function()
+        if selectedPlayer then
+            giveSwords(selectedPlayer)
+        else
+            warn("No player selected!")
+        end
+    end
+})
+
+-- Button to confirm and give all accessories
+SwordsAccessoriesTab:AddButton({
+    Name = "Give All Accessories (i patch this)",
+    Callback = function()
+        if selectedPlayer then
+            giveAccessories(selectedPlayer)
+        else
+            warn("No player selected!")
+        end
+    end
+})
+
+local attackedNPCs = {}
+local autoAttackEnabled = false
+
+-- Function to find all NPCs
+local function findAllNPCs()
+    local npcs = {}
+    for _, npc in pairs(workspace:GetDescendants()) do
+        if npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") and npc:IsA("Model") then
+            if npc.Humanoid.Health > 0 then
+                table.insert(npcs, npc)
+            end
+        end
+    end
+    return npcs
+end
+
+-- Function to attack an NPC only once
+local function attackNPC(npc)
+    if not attackedNPCs[npc] then
+        attackedNPCs[npc] = true -- Mark the NPC as attacked
+        local targetPosition = npc.HumanoidRootPart.Position
+        local args = {
+            [1] = CFrame.new(targetPosition),
+            [2] = 700
+        }
+        game:GetService("Players").LocalPlayer.Character.Warp.m1.Fire:FireServer(unpack(args))
+        print("Attacked NPC:", npc.Name)
+    end
+end
+
+-- Function to attack all NPCs once
+local function attackAllNPCsOnce()
+    local npcs = findAllNPCs()
+    for _, npc in pairs(npcs) do
+        if npc:FindFirstChild("HumanoidRootPart") and npc.Humanoid.Health > 0 then
+            attackNPC(npc)
+        end
+    end
+end
+
+-- Reset attackedNPCs when an NPC respawns
+local function resetAttackedNPCs()
+    for npc, _ in pairs(attackedNPCs) do
+        if npc.Humanoid.Health <= 0 then
+            attackedNPCs[npc] = nil
+        end
+    end
+end
+
+-- Auto-reset attackedNPCs on heartbeat
+game:GetService("RunService").Heartbeat:Connect(resetAttackedNPCs)
+
+-- Function to enable or disable auto-attack loop
+local function toggleAutoAttack()
+    if autoAttackEnabled then
+        while autoAttackEnabled do
+            attackAllNPCsOnce()
+            wait(3) -- Wait 3 seconds before attacking again
+        end
+    end
+end
+
+-- Add a tab for this feature
+local AutoAttackTab = Window:MakeTab({
+    Name = "auto farm",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+}) 
+
+AutoAttackTab:AddToggle({
+    Name = "Enable Auto farm WARP FRUIT(Every 3s)",
+    Default = false,
+    Callback = function(value)
+        autoAttackEnabled = value
+        if value then
+            toggleAutoAttack() -- Start the auto-attack loop
+        end
+    end
+})
+
 -- Create Tab 1
 local Tab = Window:MakeTab({Name = "Player hub", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 local Section = Tab:AddSection({Name = "LocalPlayer"})
@@ -317,18 +535,6 @@ SwordsAccessoriesTab:AddButton({Name = "Get All Accessories", Callback = functio
     end
 end})
 
--- Button to add StrongSpear to inventory
-SwordsAccessoriesTab:AddButton({Name = "Add StrongSpear", Callback = function()
-    local args = {[1] = "StrongSpear"}
-    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
-end})
-
--- Button to add StrongSword to inventory
-SwordsAccessoriesTab:AddButton({Name = "Add StrongSword", Callback = function()
-    local args = {[1] = "StrongSword"}
-    game:GetService("ReplicatedStorage"):WaitForChild("SwordInventoryRemote"):WaitForChild("Inventory"):FireServer(unpack(args))
-end})
-
 -- Create new tab to remove negative points
 local RemoveNegativePointsTab = Window:MakeTab({Name = "Remove Negative Points", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 local RemoveNegativePointsSection = RemoveNegativePointsTab:AddSection({Name = "Remove Negative Points"})
@@ -408,6 +614,16 @@ CombatTab:AddButton({Name = "Buy DarkLeg Style", Callback = function()
     local args = {
         [1] = "Buy",
         [2] = "DarkLeg",
+        [3] = 7
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
+end})
+
+-- Button to buy DarkLeg style
+CombatTab:AddButton({Name = "Buy Okarun", Callback = function()
+    local args = {
+        [1] = "Buy",
+        [2] = "Okarun",
         [3] = 7
     }
     game:GetService("ReplicatedStorage"):WaitForChild("BonusFolderFX"):WaitForChild("BoughAStyle"):FireServer(unpack(args))
@@ -1261,15 +1477,6 @@ game:GetService("Players").LocalPlayer.Chatted:Connect(onChatMessage)
 -- Create new tab for setting points
 local SetPointsTab = Window:MakeTab({ Name = "Max lvl Soon", Icon = "rbxassetid://4483345998", PremiumOnly = false })
 local SetPointsSection = SetPointsTab:AddSection({ Name = "Max lvl soon" })
-
--- Create new tab for Credits or Information
-local CreditsTab = Window:MakeTab({Name = "Credits", Icon = "rbxassetid://4483345998", PremiumOnly = false})
-local CreditsSection = CreditsTab:AddSection({Name = "Credits & Information"})
-
--- Add information or credits
-CreditsTab:AddLabel("Creator: VG Ducky")
-CreditsTab:AddLabel("Assistance Starfishy")
-CreditsTab:AddLabel("Developer Eclipse")
 
 OrionLib:Init()
 
