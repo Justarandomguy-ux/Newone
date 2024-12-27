@@ -209,7 +209,7 @@ local function giveSwords(targetPlayer)
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku", "ChristmasScyte"
     }
         
         for _, sword in ipairs(swords) do
@@ -501,7 +501,7 @@ SwordsAccessoriesTab:AddButton({Name = "Get All Swords", Callback = function()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "Kikoku", "ChristmasKatana"
+        "GojoSword", "Kikoku", "ChristmasKatana", "ChristmasScyte"
     }
 
     for _, sword in ipairs(swords) do
@@ -1152,7 +1152,7 @@ local function buyAllSwords()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku", "ChristmasScyte"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -1232,7 +1232,7 @@ local function buyAllSwords()
         "RedKatana", "BlueKatana", "GreenKatana", "Bisento", "AceCutlass",
         "Hassaikai", "Napoleon", "Yoru", "YoruV2", "Guitar", "Crocohok",
         "StickyStuff", "GravitySword", "CandyCane", "KamishDagger", "MoltenSword",
-        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku"
+        "GojoSword", "StrongSword", "StrongSpear", "ChristmasKatana", "Kikoku", "ChristmasScyte"
     }
 
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
